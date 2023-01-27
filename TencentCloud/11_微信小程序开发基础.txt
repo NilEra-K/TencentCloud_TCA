@@ -1,0 +1,323 @@
+Chapter1 认识微信小程序
+	1.1 微信小程序简介
+		- 小程序(Mini Program)是一种全新的连接用户与服务的方式, 它可以在微信内
+		  被便捷地获取和传播, 同时具有出色的使用体验. 其优势如下:
+		  · 速度快
+		  · 无适配
+		  · 可分享
+		  · 体验好
+		  · 易获取
+		  · 低门槛
+		
+		- 小程序的技术定位
+		  前端{
+			桌面网页{
+				Angular;
+				React;
+				Vue;
+			}
+			移动端网页;
+			JS-Native{
+				小程序;
+				React-Native;
+				weex;
+			}
+		  }
+		
+		- JS-Native技术的优势:
+		  · 开发效率高
+		  · 跨平台
+		  · 热更新
+
+	1.2 微信小程序开发
+		1.2.1 小程序账号的注册流程
+			注册小程序号-->选择账号类型-->填写邮箱和密码-->激活邮箱-->填写主题信息
+			详细账号注册流程参考: https://mp.weixin.gg.com/wxopen/waregister?action=step1
+		
+		1.2.2 小程序的开发流程
+			注册小程序-->完善小程序信息-->开发小程序-->提交审核和发布
+			详细注册流程参考: https://developers.weixin.qg.com/miniprogram/introduction/
+		
+		1.2.3 项目文件类型说明
+			.json -------- json配置文件
+			.wxml -------- wxml模板文件
+			.wxss -------- wxss样式文件
+			.js ---------- js脚本逻辑文件
+		
+		1.2.4 小程序项目结构:
+			|-pages
+			| |-index........................Index 页面文件
+			| | |-index.js
+			| | |-index.json
+			| | |-index.wxml
+			| | |-index.wxss
+			| | /
+			| |-logs.........................Logs 页面文件
+			| | |-logs.js
+			| | |-logs.json
+			| | |-logs.wxml
+			| | |-logs.wxss
+			| | /
+			| |-utils
+			| /
+			| |-app.js.......................项目APP文件
+			| |-app.json.....................项目APP文件
+			| |-app.wxml.....................项目APP文件
+			| |-project.config.json..........项目APP文件
+			| |-sitemap.json
+			|--
+			
+Chapter2 微信小程序开发基础
+	2.1 页面结构构建-WXML
+		WXML基本标签{
+			view: 视图容器标签;
+			image: 图片标签;
+			button: 按钮标签;
+			scroll-view: 滚动区域标签;
+		}
+		
+		共同属性{
+			id: 组件标识, 页面唯一;
+			class: 样式类名;
+			style: 内联样式;
+			hidden: 是否隐藏;
+			deta-*: 自定义属性;
+			bind*/catch*: 绑定事件;
+		}
+		
+		- 数据绑定流程: 
+		  · 逻辑层-->视图层-->页面
+			page({
+				data:{
+					msg: 'Hello Mini Program!';
+				},
+			});
+			
+			<view class="container">
+				<view class="msg">
+					<text class="msg-txt">{{msg}}</text>
+				</view>
+			</view>
+			
+		- 简单绑定:
+		  · 数据
+			data:{
+				// 字符串
+				msg: 'Hello World!';
+				// 数字
+				index: 0;
+				// 布尔值
+				true/false;
+			}
+		  · 绑定文本
+			<view>{{msg}}</view>
+
+		  · 组件属性值
+		    <view id="item{{index}}"></view>
+
+		  · 关键字绑定
+		    <checkbox checked="{{false}}"></checkbox>
+
+		- 运算绑定机制：
+		  · 数据
+			data:{
+				vip: false,
+				x: 3,
+				y: 5,
+				result: 8,
+				name: "Tom";
+				userInfo: {
+					nickname: "Tom"
+				},
+				people:["Li Lei", "Han Meimei"]
+			}
+		  · 三元运算
+		    <view>{{vip?"Dear":"Hi"}}</view>
+
+		  · 算术运算
+		    <view>{{x + y}} = {{result}}</view>
+
+		  · 字符串拼接
+		    <view>{{"Hi" + name}}</view>
+
+		  · 数据路径运算
+		    <view>{{userInfo.nickname}}</view>
+		    <view>{{people[0]}}</view>
+		
+		- 条件控制
+		  data:{
+			greet: false	// 布尔值
+		  }
+		  
+		  · wx:if
+			<view wx:if="{{true}}"></view>
+			<view wx:elif="{{false}}"></view>
+			<view wx:else></view>
+		
+		- 循环
+		  · wx:for
+		    for(var index=0; index<array.length; index++){
+				console.log(index + ':' + array[Index];
+			}
+			
+			<view wx:for="{{array}}" wx:for-index="index" wx:for-item="item" wx:key="unique">{{index}}:{{item}}</view>
+			
+			data:{
+				array:[1, 3, 5, 7, 9]	// 布尔值
+			}
+		
+		- 事件绑定的机制
+		  view(视图层)							AppSerivce(逻辑层)
+			+---------+							JavaScript
+			| page    |							
+			|+---------+						
+			|| page    |  ------事件触发------> onBindTap:
+			||+---------+ <------事件响应------	function(){}
+			+|| page    |
+			 ||         |
+			 +| bindtap |
+			  +---------+
+		
+		WXML:
+			<view bind:tap="OnBindTap">点我</view>
+		JavaScript:
+			Page({
+				data: {},
+				onLoad: function(){}
+				onBindTap: function(event){
+					// 事件响应代码
+					...
+				}
+			});
+
+	2.2 页面样式定义-WXSS (WeiXin Style Sheets)
+		- 样式导入
+		  · 使用 @import语句导入外联样式表, 需使用外联样式表的相对路径
+		    用;表示语句结束.
+			/** Common.wxss **/
+			.small-p{
+				padding: 5px;
+			}
+			
+			/** app.wxss **/
+			@import "commen.wxss";
+			middle-p{
+				padding: 15px;
+			}
+		
+		- 内联样式
+		  优先级 Style > Class
+		  · style
+			<view style="color:{{color}};"/>
+		  · class
+			<view class="normal_view"/>
+		
+		- 全局样式与局部样式
+		  局部样式 > 全局样式
+		  · 定义在app.wxss中的样式为全局样式, 作用于每一个页面. 在Page的wxss文件中定义的样式为局部样式, 
+		    之作用在对应的页面, 并会覆盖app.wxss中相同的选择器.
+		
+		- 选择器:
+		  .class............| .intro............| 选择所有拥有class="intro"的组件
+		  #id...............| #firstname........| 选择拥有id="firstname"的组件
+		  element...........| view..............| 选择所有view组件
+		  element, element..| view, checkbox....| 选择所有文档的view组件和所有的checkbox组件
+		  ::after...........| view::after.......| 在view组件后面插入内容
+		  ::before..........| view::before......| 在view组件前边插入内容		
+		
+	2.3 小程序基础组件
+		- 小程序框架为开发者提供了一系列基础组件, 开发者可以通过组合这些基础组件进行快速开发.
+		  · 组件是视图层的基本组成单元.
+		  · 组件自带一些功能与微信风格一致的样式.
+		  · 一个组件通常包括开始和结束标签, 属性用来修饰这个组件, 内容在两个标签之内.
+		
+		- 视图容器
+		  · view
+		  · scroll-view
+		  · swiper
+		- 基本内容
+		  · text
+		  · icon
+		  · process
+		- 地图组件
+		  · map
+		  
+	2.4 小程序API
+		2.4.1 获取用户信息API
+			// 必须是在用户已经授权的情况下调用
+			wx.getUserInfo({
+				success: res => {
+					// 可以将res发送给后台解码出unionId
+					this.globalData.userInfo = res.userInfo
+					// 由于getUserInfo是网络请求, 可能会在 Page.onLoad之后才返回
+					// 所以此处加入 callback 以防止这种情况
+					if (this.userInfoReadyCallback){
+						this.userInfoReadyCallback(res)
+					}
+				}
+			})
+		
+		2.4.2 获取地理位置API
+			- 获取地理位置API的使用: 在app.json 文件中修改全局配置
+				{
+					"pages":["pages/index/index"],
+					"permission":{
+						"scope.userLocation":{
+							"desc": "你的位置信息将用于小程序位置接口的效果展示"
+						}
+					}
+				}
+			
+			- 代码逻辑
+				<!--index.wxm1-->
+				<view class="container">
+					<view>
+						<button bindtap='getMyLocation'>获取地理位置</button>
+					</view>
+					<view>
+						<text>经度:{{ long }}</text>
+					</view>
+					<view>
+						<text>经度:{{ lati }}</text>
+					</view>
+				</view>
+				
+				// index.js
+				// 获取应用实例
+				const app = getApp()
+				Page({
+					getMyLocation: function(e){
+						wx.getLocation({
+							type:'wgs84',
+							success: (res)=>{
+								var latitude = res.latitude // 纬度
+								var longitude = res.longitude // 经度
+								this.setData({
+									lati: latitude,
+									long: longitude
+								})
+							}
+						})
+					}
+				})
+			
+			- 扫一扫API
+				<!--index.wxm1-->
+				<view class="container">
+					<view>
+						<button bindtap='scanMyCode'>扫一扫</button>
+					</view>
+				</view>
+				
+				// index.js
+				const app = getAPP()
+				Page({
+					scanMyCode: function(e){
+						wx.scanCode({
+							success:(res)=>{
+								console.log(res)
+							}
+						})
+					}
+				})
+
